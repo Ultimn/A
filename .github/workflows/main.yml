@@ -27,11 +27,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install ffmpeg
+      
+      - name: Install system dependencies (ffmpeg and ImageMagick)
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
-
+          sudo apt-get install -y ffmpeg imagemagick
+          
       # This step now includes the "env" block to securely load the API key
       - name: Run main script
         env:
