@@ -27,13 +27,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      
-      - name: Install system dependencies (ffmpeg and ImageMagick)
+      # This step now installs dependencies AND fixes the security policy
+      - name: Install system dependencies and fix ImageMagick policy
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg imagemagick
-          
-      # This step now includes the "env" block to securely load the API key
+          # This is the new line that fixes the error
+          sudo sed -i 's/<policy domain="path" rights="none" pattern="@\*"\/>/<policy domain="path" rights="read|write" pattern="@\*"\/>/g' /etc/ImageMagick-6/policy.xml
+
       - name: Run main script
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
