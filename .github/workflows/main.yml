@@ -1,15 +1,20 @@
-# File: .github/workflows/main.yml
+# .github/workflows/main.yml
 
-name: Run Python Application
+name: Python application CI
 
 # Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ main ]
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-  build-and-run:
+  build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -18,23 +23,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Sets up a Python environment for use in the workflow
+      # 2. Sets up Python 3.10 environment
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # 3. Installs dependencies from requirements.txt
-      #    Note: Corrected your file name from "requirements.text" to "requirements.txt"
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-             ffmpeg
-      # 4. Runs the main Python script
-      - name: Run Python script
-        env:
-          # IMPORTANT: These should be configured as encrypted secrets in your
-          # repository's settings (Settings > Secrets and variables > Actions)
-          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
-          PEXELS_KEY: ${{ secrets.PEXELS_API_KEY }}
-          GROQ_API_KEY: ${{secrets.GROQ_API_KEY }}
+      # 3. Installs Python dependencies from your requirements.txt file
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. (This is the fix) Install the ffmpeg system dependency
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      # 5. Runs your Python script
+      - name: Run main script
         run: python app.py "INTERESTING FACTS"
