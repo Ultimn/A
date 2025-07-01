@@ -28,7 +28,8 @@ jobs:
       #    Note: Corrected your file name from "requirements.text" to "requirements.txt"
       - name: Install dependencies
         run: pip install -r requirements.txt
-
+             sudo apt update
+             sudo apt install ffmpeg
       # 4. Runs the main Python script
       - name: Run Python script
         env:
